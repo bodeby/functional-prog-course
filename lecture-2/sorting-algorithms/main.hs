@@ -17,7 +17,15 @@ _TODO1_ = ([],[])
      list of integers supposedly sorted in ascending order. -}
 insert_elem :: Ord a => a -> [a] -> [a]
 
-insert_elem x l      = _TODO0_
+insert_elem x [] = [x]
+insert_elem x (y:l) = 
+    if x <= y then x:y:l
+    else y:(insert_elem x l)
+
+insert_elem' x [] = [x]
+insert_elem' x (y:l)
+    | x <= y        = x:y:l
+    | otherwise     = y:(insert_elem x l)
 
 {-|  Write an insertionSort function which performs insertion sorting of a list
      of integers. Remember that this consists of extracting the first element
@@ -25,9 +33,9 @@ insert_elem x l      = _TODO0_
      inserting the isolated element (with the insert function). -}
 insertionSort :: Ord a => [a] -> [a]
 
-insertionSort [] = _TODO0_
-insertionSort [x] = _TODO0_
-insertionSort (x:xs) = _TODO0_
+insertionSort []        = []
+insertionSort [x]       = [x]
+insertionSort (x:xs)    = insert_elem' x (insertionSort xs)
 
 test1 = insertionSort [21,1,13,5,8,1,2,3]
 
@@ -41,9 +49,9 @@ test1 = insertionSort [21,1,13,5,8,1,2,3]
     l2 have a length not differing at most by one. -}
 split :: Ord a => [a] -> ([a], [a])
 
-split []     = _TODO1_
-split (x:xs) = _TODO1_
-
+split []     = ([], [])
+split (x:xs) = (x:l1, l2)
+    where (l2, l1) = split xs
 
 -- Should be equal to ([2,5,7,6,9],[1,8,3,0,4])
 test11 = split [2,1,5,8,7,3,6,0,9,4]
@@ -52,8 +60,12 @@ test11 = split [2,1,5,8,7,3,6,0,9,4]
     sorted in ascending order and merges them into a single sorted list. -}
 fusion :: Ord a => [a] -> [a] -> [a]
 
-fusion l1 l2 = _TODO0_
-
+fusion [] []            = []
+fusion l1 []            = l1
+fusion [] l2            = l2
+fusion (x1:l1) (x2:l2)
+    | x1 <= x2          = x1: fusion l1 (x2:l2)
+    | otherwise         = x2: fusion (x1:l1) l2
 
 
 -- Should be equal to [1,2,3,5,6,7,9]
@@ -65,9 +77,14 @@ test2 = fusion [1,6,7] [2,3,5,9]
     in two, recursively sorting each of the two lists obtained, and then
     merging the two sorted lists. -}
 mergeSort :: Ord a => [a] -> [a]
-mergeSort l = _TODO0_
+
+mergeSort [] = []
+mergeSort [x] = [x]
+mergeSort l = fusion (mergeSort l1) (mergeSort l2)
+    where (l1, l2) = split l
 
 test3 = mergeSort [21,1,13,5,8,1,2,3]
+test3a = split [21,1,13,5,8,1,2,3]
 
 
 
@@ -129,7 +146,15 @@ _TODO3_ = (Nothing, Null)
        tree b.  Write the merge function. -}
 merge_heaps :: Heap -> Heap -> Heap
 
-merge_heaps h1 h2 = _TODO2_
+merge_heaps Null h2 = h2
+merge_heaps h1 Null = h1
+merge_heaps (Fork (x, l1, r1)) (Fork (y, l2, r2))
+    | x <= y =
+        let res = (merge_heaps l1 (Fork (y, l2, r2))) in
+        Fork (x, r1, res)
+    | otherwise =
+        let res = (merge_heaps l2 (Fork (x, l1, r1))) in
+        Fork (y, r2, res)
 
 
 {-| Using the merge function, write an 'add' function that inserts a new

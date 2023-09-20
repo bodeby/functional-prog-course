@@ -8,7 +8,8 @@ _TODO0_ = []
 {-| Exercise 2.1.a.
 Implement list of squares of a given list using recursion.  -}
 squares :: [Int] -> [Int]
-squares l = _TODO0_
+squares [] = []  -- Base case: empty list.
+squares (x:xs) = x * x : squares xs  -- Recursive case: square the first element and recurse on the rest of the list.
 
 {-| Exercise 2.2.
 Implement list_map that applies a function f to all elements of the list. -}
